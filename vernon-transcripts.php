@@ -1,33 +1,265 @@
 <?php
-   /*
-   Plugin Name: Vernon Transcripts
-   Plugin URI: https://www.vernoncourtreporters.com
-   Description: Web application to process audio files
-   Version: 1.0
-   Author: Vernon Court Reporters, LLC
-   Author URI: https://www.vernoncourtreporters.com
-   */
+/*
+ * Plugin Name: Vernon Transcripts
+ * Plugin URI: https://www.vernoncourtreporters.com
+ * Description: Web application to process audio files
+ * Version: 1.0
+ * Author: Vernon Court Reporters, LLC
+ * Author URI: https://www.vernoncourtreporters.com
+ * Text Domain: vernon-transcripts
+*/
 
-// Make sure we don't expose any info if called directly
-if ( !function_exists( 'add_action' ) ) {
-  echo 'Hi there!  I\'m just a plugin, not much I can do when called directly.';
-  exit;
-}
+namespace Vernon_Transcripts;
 
-// Define the constant for wp_get_environment_type().
-//define( 'WP_ENVIRONMENT_TYPE', ( 'https://staging.vernoncourtreporters.com' === get_site_url() ) ? 'staging' : 'production' );
+defined( 'ABSPATH' ) or die();
 
-// Check if CMB2 plugin is installed and active.
-register_activation_hook( __FILE__, 'vernon_transcripts_plugin_activate' );
-function vernon_transcripts_plugin_activate() {
-    // Require parent plugin
-    if ( ! is_plugin_active( 'cmb2/init.php' ) and current_user_can( 'activate_plugins' ) ) {
-        // Stop activation redirect and show error
-        wp_die('Sorry, but this plugin requires the CMB2 plugin to be installed and active. <br><a href="' . admin_url( 'plugins.php' ) . '">&laquo; Return to Plugins</a>');
+/**
+ * RAC class.
+ *
+ * @since 1.0.0
+ */
+final class Plugin {
+
+    /**
+     * The instance.
+     *
+     * @since 1.0.0
+     */
+    private static $instance;
+
+    /**
+     * Plugin version.
+     *
+     * @since 1.0.0
+     */
+    private static $plugin_version;
+
+    /**
+     * Plugin basename.
+     *
+     * @since 1.0.0
+     */
+    private static $plugin_basename;
+
+    /**
+     * Plugin name.
+     *
+     * @since 1.0.0
+     */
+    private static $plugin_name;
+
+    /**
+     * Plugin slug.
+     *
+     * @since 1.0.0
+     */
+    private static $plugin_slug;
+
+    /**
+     * Plugin directory.
+     *
+     * @since 1.0.0
+     */
+    private static $plugin_dir;
+
+    /**
+     * Plugin url.
+     *
+     * @since 1.0.0
+     */
+    private static $plugin_url;
+
+    /**
+     * Returns the instance.
+     *
+     * @since 1.0.0
+     *
+     * @return Plugin
+     */
+    public static function get_instance() {
+        if ( is_null( self::$instance ) ) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @since 1.0.0
+     */
+    private function __construct() {
+        if ( $this->safe_mode() ) {
+            return;
+        }
+
+        $this->define_constants();
+        $this->add_hooks();
+    }
+
+    /**
+     * Adds safe mode.
+     *
+     * @since 1.0.0
+     */
+    private function safe_mode() {
+        $safe_mode = filter_input( INPUT_GET, 'vernon_transcripts_safe_mode', FILTER_SANITIZE_SPECIAL_CHARS );
+
+        return boolval( $safe_mode );
+    }
+
+    /**
+     * Defines constants.
+     *
+     * @since 1.0.0
+     */
+    protected function define_constants() {
+        $plugin_data = get_file_data( __FILE__, [ 'Plugin Name', 'Version' ], 'vernon-transcripts' );
+
+        self::$plugin_basename = plugin_basename( __FILE__ );
+        self::$plugin_name     = array_shift( $plugin_data );
+        self::$plugin_slug     = strtolower( self::$plugin_name );
+        self::$plugin_version  = array_shift( $plugin_data );
+        self::$plugin_dir      = trailingslashit( plugin_dir_path( __FILE__ ) );
+        self::$plugin_url      = trailingslashit( plugin_dir_url( __FILE__ ) );
+    }
+
+    /**
+     * Adds hooks.
+     *
+     * @since 1.0.0
+     */
+    protected function add_hooks() {
+        add_action( 'plugins_loaded', [ $this, 'init' ] );
+    }
+
+    /**
+     * Initializes.
+     *
+     * @since 1.0.0
+     */
+    public function init() {
+        load_plugin_textdomain( 'vernon-transcripts', false, $this->plugin_dir() . '/languages' );
+
+        $this->load_files( [
+            'utilities',
+            'post-types',
+            'cmb2',
+        ] );
+
+        do_action( 'vernon-transcripts/init', $this );
+    }
+
+    /**
+     * Gets the plugin version.
+     *
+     * @since 1.0.0
+     */
+    public function plugin_version() {
+        return self::$plugin_version;
+    }
+
+    /**
+     * Gets the plugin basename.
+     *
+     * @since 1.0.0
+     */
+    public function plugin_basename() {
+        return self::$plugin_basename;
+    }
+
+    /**
+     * Gets the plugin slug.
+     *
+     * @since 1.0.0
+     */
+    public function plugin_slug() {
+        return self::$plugin_slug;
+    }
+
+    /**
+     * Gets the plugin name.
+     *
+     * @since 1.0.0
+     */
+    public function plugin_name() {
+        return self::$plugin_name;
+    }
+
+    /**
+     * Gets the plugin directory.
+     *
+     * @since 1.0.0
+     */
+    public function plugin_dir() {
+        return self::$plugin_dir;
+    }
+
+    /**
+     * Gets the plugin url.
+     *
+     * @since 1.0.0
+     */
+    public function plugin_url() {
+        return self::$plugin_url;
+    }
+
+    /**
+     * Loads a directory.
+     *
+     * @since 1.0.0
+     */
+    public function load_directory( $directory_name ) {
+        $path       = trailingslashit( $this->plugin_dir() . 'includes/' . $directory_name );
+        $file_names = glob( $path . '*.php' );
+
+        foreach ( $file_names as $filename ) {
+            if ( file_exists( $filename ) ) {
+                require_once $filename;
+            }
+        }
+    }
+
+    /**
+     * Loads files.
+     *
+     * @since 1.0.0
+     */
+    public function load_files( $file_names = array() ) {
+        foreach ( $file_names as $file_name ) {
+            $this->load_file( $file_name );
+        }
+    }
+
+    /**
+     * Loads a file.
+     *
+     * @since 1.0.0
+     */
+    public function load_file( $file_name = '', $base = false ) {
+        $base = empty( $base ) ? 'includes/' : '/';
+
+        if ( file_exists( $path = $this->plugin_dir() . $base . $file_name . '.php' ) ) {
+            require_once $path;
+        }
     }
 }
 
-require_once plugin_dir_path( __FILE__ ) . 'inc/cmb2.php';
-require_once plugin_dir_path( __FILE__ ) . 'inc/custom-post-types.php';
+/**
+ * Returns the application instance.
+ *
+ * @since 1.0.0
+ *
+ * @return Vernon_Transcripts
+ */
+function vernon_transcripts() {
+    return Plugin::get_instance();
+}
 
-?>
+/**
+ * Initializes the application.
+ *
+ * @since 1.0.0
+ */
+vernon_transcripts();
