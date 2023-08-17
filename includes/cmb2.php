@@ -262,7 +262,6 @@ final class Custom_Fields {
             'id'   => $prefix . 'completed_read_only',
             'type' => 'text_datetime_timestamp',
             'desc'	  => esc_html__( 'The date and time the job was completed, whether successfully or failing, in ISO-8601 UTC form.', 'vernon-transcripts' ),
-            'default' => time(),
             'attributes' => [
                 'readonly' => 'readonly',
                 'disabled' => 'disabled',
