@@ -68,7 +68,7 @@ final class Post_Types {
                 'show_in_nav_menus' => true,
                 'show_ui'           => true,
                 'has_archive'       => false,
-                'supports'          => [ 'editor' ],
+                'supports'          => [ 'title', 'editor' ],
                 'menu_position'     => 39,
                 'show_in_rest'		=> true,
             ]
