@@ -224,6 +224,18 @@ final class Custom_Fields {
 
         // Adds fields to 'Transcript Completed Job Details' metabox.
         $job_complete_details->add_field( [
+            'name'    => esc_html__( 'ID', 'vernon-transcripts' ),
+            'id'      => $prefix . 'id',
+            'type'    => 'text',
+            'desc'    => esc_html__( 'The job ID.', 'vernon-transcripts' ),
+            'attributes' => [
+                'readonly' => 'readonly',
+                'disabled' => 'disabled',
+            ],
+            'save_field'  => false,
+        ] );
+
+        $job_complete_details->add_field( [
             'name'    => esc_html__( 'Audio Duration', 'vernon-transcripts' ),
             'id'      => $prefix . 'audio_length_read_only',
             'type'    => 'text',
