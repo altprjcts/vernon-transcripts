@@ -1,6 +1,6 @@
 <?php
 
-namespace Vernon_Transcripts;
+namespace Vernon;
 
 defined( 'ABSPATH' ) or die();
 
@@ -58,11 +58,11 @@ final class Post_Types {
      */
     public function register_custom_post_types() {
         register_post_type(
-            'vernon-transcripts',
+            'vernon',
             [
                 'labels'            => [
-                    'name'          => esc_html__( 'Transcripts', 'vernon-transcripts' ),
-                    'singular_name' => esc_html__( 'Transcript', 'vernon-transcripts' ),
+                    'name'          => esc_html__( 'Transcripts', 'vernon' ),
+                    'singular_name' => esc_html__( 'Transcript', 'vernon' ),
                 ],
                 'public'            => false,
                 'show_in_nav_menus' => true,

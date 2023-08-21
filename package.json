@@ -1,5 +1,5 @@
 {
-    "name": "vernon-transcripts",
+    "name": "vernon",
     "version": "1.0.0",
     "postcss": {
         "plugins": {
@@ -24,14 +24,14 @@
         }
     },
     "scripts": {
-        "clean": "rimraf assets/dist vernon-transcripts vernon-transcripts.zip",
-        "pot": "wp-pot --domain 'vernon-transcripts' --package 'Vernon_Transcripts' --dest-file 'languages/vernon-transcripts.pot' --src '**/*.php'",
+        "clean": "rimraf assets/dist vernon vernon.zip",
+        "pot": "wp-pot --domain 'vernon' --package 'Vernon' --dest-file 'languages/vernon.pot' --src '**/*.php'",
         "build:css": "postcss assets/css/**/[!_]*.css --dir assets/dist/css",
         "build:js": "babel assets/js/**/[!_]*.js -d assets/dist/js",
         "build": "npm run clean && npm run build:css && npm run build:js",
         "watch": "npm-watch",
-        "copy": "copyfiles 'languages/*' 'assets/dist/**/*' 'assets/lib/**/*' 'includes/**/*' 'vendor/**/*' vernon-transcripts.php readme.txt vernon-transcripts",
-        "zip": "zip-build --build-dir 'vernon-transcripts' --zip-dir '.' --template '%NAME%.%EXT%'",
+        "copy": "copyfiles 'languages/*' 'assets/dist/**/*' 'assets/lib/**/*' 'includes/**/*' 'vendor/**/*' vernon.php readme.txt vernon",
+        "zip": "zip-build --build-dir 'vernon' --zip-dir '.' --template '%NAME%.%EXT%'",
         "release": "npm run build && npm run copy"
     },
     "devDependencies": {

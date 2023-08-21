@@ -2,6 +2,6 @@ node_modules
 .DS_Store
 dist
 vendor
-vernon-transcripts
-vernon-transcripts.zip
-languages/vernon-transcripts.pot
+vernon
+vernon.zip
+languages/vernon.pot

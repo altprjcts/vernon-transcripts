@@ -6,10 +6,10 @@
  * Version: 1.0
  * Author: Vernon Court Reporters, LLC
  * Author URI: https://www.vernoncourtreporters.com
- * Text Domain: vernon-transcripts
+ * Text Domain: vernon
 */
 
-namespace Vernon_Transcripts;
+namespace Vernon;
 
 defined( 'ABSPATH' ) or die();
 
@@ -104,7 +104,7 @@ final class Plugin {
      * @since 1.0.0
      */
     private function safe_mode() {
-        $safe_mode = filter_input( INPUT_GET, 'vernon_transcripts_safe_mode', FILTER_SANITIZE_SPECIAL_CHARS );
+        $safe_mode = filter_input( INPUT_GET, 'vernon_safe_mode', FILTER_SANITIZE_SPECIAL_CHARS );
 
         return boolval( $safe_mode );
     }
@@ -115,7 +115,7 @@ final class Plugin {
      * @since 1.0.0
      */
     protected function define_constants() {
-        $plugin_data = get_file_data( __FILE__, [ 'Plugin Name', 'Version' ], 'vernon-transcripts' );
+        $plugin_data = get_file_data( __FILE__, [ 'Plugin Name', 'Version' ], 'vernon' );
 
         self::$plugin_basename = plugin_basename( __FILE__ );
         self::$plugin_name     = array_shift( $plugin_data );
@@ -140,7 +140,7 @@ final class Plugin {
      * @since 1.0.0
      */
     public function init() {
-        load_plugin_textdomain( 'vernon-transcripts', false, $this->plugin_dir() . '/languages' );
+        load_plugin_textdomain( 'vernon', false, $this->plugin_dir() . '/languages' );
 
         $this->load_files( [
             'utilities',
@@ -148,7 +148,7 @@ final class Plugin {
             'cmb2',
         ] );
 
-        do_action( 'vernon-transcripts/init', $this );
+        do_action( 'vernon/init', $this );
     }
 
     /**
@@ -251,9 +251,9 @@ final class Plugin {
  *
  * @since 1.0.0
  *
- * @return Vernon_Transcripts
+ * @return Vernon
  */
-function vernon_transcripts() {
+function vernon() {
     return Plugin::get_instance();
 }
 
@@ -262,4 +262,4 @@ function vernon_transcripts() {
  *
  * @since 1.0.0
  */
-vernon_transcripts();
+vernon();
