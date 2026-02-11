@@ -144,7 +144,8 @@ final class Plugin {
 
         $this->load_files( [
             'utilities',
-            'post-types',
+            'rev-api',
+            'transcripts',
             'cmb2',
         ] );
 
